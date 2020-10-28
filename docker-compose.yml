@@ -1,0 +1,33 @@
+version: '3.8'
+services: 
+    mysql: 
+        image: mysql:8.0.22
+        container_name: mysql
+        restart: always
+        env_file: 
+            - ".env"
+        volumes:
+            - "./data/mysql:/var/lib/mysql"
+        healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "${MYSQL_HOST}"]
+            timeout: 20s
+            retries: 10
+    phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        environment:
+            - PMA_HOST=${MYSQL_HOST}
+        ports:
+            - 8080:80
+        depends_on:
+            - mysql
+    app:
+        build: .
+        environment:
+            - NODE_ENV=${NODE_ENV}
+        ports:
+            - 3000:80
+        command: npm start
+        depends_on:
+            mysql: 
+                condition: service_healthy
