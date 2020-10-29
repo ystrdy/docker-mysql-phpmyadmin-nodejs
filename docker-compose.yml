@@ -27,7 +27,6 @@ services:
             - NODE_ENV=${NODE_ENV}
         ports:
             - 3000:80
-        command: npm start
         depends_on:
             mysql: 
                 condition: service_healthy
